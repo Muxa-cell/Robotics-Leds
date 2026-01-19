@@ -13,7 +13,6 @@ public class Robot extends TimedRobot {
   private final AddressableLEDBuffer ledBuffer;
   private int hue = 0;
   private int ledCount = 0;
-  private int countOff = 60;
   private boolean turningOff = false;
 
   
@@ -28,13 +27,18 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-  //   for(int i = 0; i <= ledBuffer.getLength(); i++) {
-  //     int gradientHue = (hue + (i * 180 / ledBuffer.getLength())) % 180;
-  //     ledBuffer.setHSV(i, gradientHue, 255, 128);
-  //   }
+   if(!turningOff) {
+    ++ledCount;
+     if(ledCount >= ledBuffer.getLength()) {
+       turningOff = true;
+     }
+   } else {
+     --ledCount;
+     if(ledCount <= 0) {
+      turningOff = false;
+     }
+   }
 
-  //   hue = (hue + 3) % 180;
-  //   led.setData(ledBuffer);
    for(int i = 0; i < ledBuffer.getLength(); i++) {
       if(i < ledCount) {
         int gradientBuffer = (hue +(i * 180 / ledBuffer.getLength())) % 180;
@@ -49,28 +53,17 @@ public class Robot extends TimedRobot {
       //   int gradientBuffer = (hue +(i * 180 / ledBuffer.getLength())) % 180;
       //   ledBuffer.setHSV(i, gradientBuffer, 255, 128);
       // }
-
-    }
-      if(!turningOff) {
-        ++ledCount;
-        if(ledCount >= ledBuffer.getLength()) {
-          turningOff = true;
-        }
-      }else {
-        if(ledCount < ledBuffer.getLength()) {
-          turningOff = false;
-        }
-      }
+    } 
       // if(!turningOff) {
       //   --countOff;
       //   if(countOff <= ledBuffer.getLength()){
       //     turningOff = true;
       //   }
       // } else {
-
-      // }if(countOff >= ledBuffer.getLength()){
+      //   if(countOff >= ledBuffer.getLength()){
       //     turningOff = false;
       //   }
+      // }
     hue = (hue + 3) % 180;
     led.setData(ledBuffer);
   }
