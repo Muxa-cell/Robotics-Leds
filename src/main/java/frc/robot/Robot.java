@@ -6,7 +6,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.util.Color;
+import pabeles.concurrency.ConcurrencyOps.Reset;
 
 public class Robot extends TimedRobot {
   private final AddressableLED led;
@@ -14,6 +17,14 @@ public class Robot extends TimedRobot {
   private int hue = 0;
   private int ledCount = 0;
   private boolean turningOff = false;
+  private int redCount = 0;
+  private int greenCount = 0;
+  private int blueCount = 0;
+  private int countYellow = 0;
+  private LEDPattern red = LEDPattern.solid(Color.kRed);
+  private LEDPattern green = LEDPattern.solid(Color.kGreen);
+  private LEDPattern blue = LEDPattern.solid(Color.kBlue);
+  private LEDPattern yellow = LEDPattern.solid(Color.kYellow);
 
   
   public Robot() {
@@ -27,45 +38,56 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-   if(!turningOff) {
+  if(!turningOff){
     ++ledCount;
-     if(ledCount >= ledBuffer.getLength()) {
-       turningOff = true;
-     }
-   } else {
-     --ledCount;
-     if(ledCount <= 0) {
+    if(ledCount >= ledBuffer.getLength()) {
+      turningOff = true;
+    }
+  } else {
+    --ledCount;
+    if(ledCount <= 0) {
       turningOff = false;
+    }
+  }
+  for(int i = 0; i < ledBuffer.getLength(); i++) {
+     if(ledCount <= 15) {
+      ledBuffer.setRGB(i, 255, 0, 0);
+     } else if(ledCount > 15 && ledCount <= 30){
+      ledBuffer.setRGB(i, 0, 255, 0);
+     } else if(ledCount > 30 && ledCount <= 45) {
+      ledBuffer.setRGB(i, 0, 0, 255);
+     } else {
+       int gradientHue = (hue +(i * 180 / ledBuffer.getLength())) % 180;
+       ledBuffer.setHSV(i, gradientHue,255, 128);
      }
    }
-
-   for(int i = 0; i < ledBuffer.getLength(); i++) {
-      if(i < ledCount) {
-        int gradientBuffer = (hue +(i * 180 / ledBuffer.getLength())) % 180;
-        ledBuffer.setHSV(i, gradientBuffer, 255, 128);
-      } else {
-        ledBuffer.setRGB(i, 0, 0 ,0);
-      }
-      // if(i == countOff) {
-      //   --countOff;
-      //   ledBuffer.setRGB(i,0,0,0);
-      // } else {
-      //   int gradientBuffer = (hue +(i * 180 / ledBuffer.getLength())) % 180;
-      //   ledBuffer.setHSV(i, gradientBuffer, 255, 128);
-      // }
-    } 
-      // if(!turningOff) {
-      //   --countOff;
-      //   if(countOff <= ledBuffer.getLength()){
-      //     turningOff = true;
-      //   }
-      // } else {
-      //   if(countOff >= ledBuffer.getLength()){
-      //     turningOff = false;
-      //   }
-      // }
-    hue = (hue + 3) % 180;
-    led.setData(ledBuffer);
+   hue = (hue + 1) % 180;
+   led.setData(ledBuffer);
   }
+
+  //  if(!turningOff) {
+  //   ++ledCount;
+  //    if(ledCount >= ledBuffer.getLength()) {
+  //      turningOff = true;
+  //    }
+  //  } else {
+  //    --ledCount;
+  //    if(ledCount <= 0) {
+  //     turningOff = false;
+  //    }
+  //  }
+
+  //  for(int i = 0; i < ledBuffer.getLength(); i++) {
+  //     if(i < ledCount) {
+  //       int gradientBuffer = (hue +(i * 180 / ledBuffer.getLength())) % 180;
+  //       ledBuffer.setHSV(i, gradientBuffer, 255, 128);
+       
+  //     } else {
+  //       ledBuffer.setRGB(i, 0, 0 ,0);
+  //     }
+  //   }
+  //   hue = (hue + 3) % 180;
+  //   led.setData(ledBuffer);
+  
 }
 
